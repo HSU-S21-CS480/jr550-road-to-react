@@ -1,5 +1,7 @@
 import logo from './logo.svg';
 import './App.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { Container, Row, Col, Nav, Navbar, FormControl, Form, Button, NavDropdown } from 'react-bootstrap';
 
 // class definition
 class Developer {
@@ -51,27 +53,64 @@ const App = () => {
     console.log(event.target.value);
   };
 
+  //see https://react-bootstrap.github.io/layout/grid/ for how to do basic layout in Bootstrap
   return (
-    <div>
-      <h1>{welcome.greeting} {welcome.title}</h1>
+    <Container>
+      <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
+        <Navbar.Brand href="#home">React-Bootstrap</Navbar.Brand>
+        <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+        <Navbar.Collapse id="responsive-navbar-nav">
+          <Nav className="mr-auto">
+            <Nav.Link href="#features">Features</Nav.Link>
+            <Nav.Link href="#pricing">Pricing</Nav.Link>
+            <NavDropdown title="Dropdown" id="collasible-nav-dropdown">
+              <NavDropdown.Item href="#action/3.1">Action</NavDropdown.Item>
+              <NavDropdown.Item href="#action/3.2">Another action</NavDropdown.Item>
+              <NavDropdown.Item href="#action/3.3">Something</NavDropdown.Item>
+              <NavDropdown.Divider />
+              <NavDropdown.Item href="#action/3.4">Separated link</NavDropdown.Item>
+            </NavDropdown>
+          </Nav>
+          <Nav>
+            <Nav.Link href="#deets">More deets</Nav.Link>
+            <Nav.Link eventKey={2} href="#memes">
+              Dank memes
+      </Nav.Link>
+          </Nav>
+        </Navbar.Collapse>
+      </Navbar>
+      <Row>
+        <Col>
+          <h1>{welcome.greeting} {welcome.title}</h1>
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <label htmlFor="search">Search: </label>
+        </Col>
+        <Col>
+          <input id="search" type="text" onChange={handleChange} />
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <hr />
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <List />
+        </Col>
+      </Row>
+    </Container >
 
-      <label htmlFor="search">Search: </label>
-      <input id="search" type="text" onChange={handleChange} />
-
-      <hr />
-      
-      <List />
-
-      <List />
-
-    </div>
   );
 }
 
 
 
 //List React element definition
-const List = () => 
+const List = () =>
   list.map(item => (
     <div key={item.objectID}>
       <span>
@@ -82,7 +121,7 @@ const List = () =>
       <span>{item.points}</span>
     </div>
   )
-);
+  );
 
 
 
