@@ -43,13 +43,20 @@ const list = [
   },
 ];
 
-function App() {
+//This is the app, it is similar to a "main" function but returns an html element which contains the 
+// webpage. 
+const App = () => {
+
+  const handleChange = event => {
+    console.log(event.target.value);
+  };
+
   return (
     <div>
       <h1>{welcome.greeting} {welcome.title}</h1>
 
       <label htmlFor="search">Search: </label>
-      <input id="search" type="text" />
+      <input id="search" type="text" onChange={handleChange} />
 
       <hr />
       
@@ -61,19 +68,22 @@ function App() {
   );
 }
 
-function List() {
-  return list.map((item) => {
-    return (
-      <div key={item.objectID}>
-        <span>
-          <a href={item.url}>{item.title}</a>
-        </span>
-        <span>{item.author}</span>
-        <span>{item.num_comments}</span>
-        <span>{item.points}</span>
-      </div>
-    );
-  })
-}
+
+
+//List React element definition
+const List = () => 
+  list.map(item => (
+    <div key={item.objectID}>
+      <span>
+        <a href={item.url}>{item.title}</a>
+      </span>
+      <span>{item.author}</span>
+      <span>{item.num_comments}</span>
+      <span>{item.points}</span>
+    </div>
+  )
+);
+
+
 
 export default App;
