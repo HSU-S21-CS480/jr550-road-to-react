@@ -87,7 +87,7 @@ const List = props =>
       <span>{item.points}</span>
     </div>
   )
-);
+  );
 
 
 
