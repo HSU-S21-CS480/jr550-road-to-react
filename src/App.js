@@ -3,6 +3,20 @@ import './App.css';
 import React from 'react';
 
 
+//Custom React Hook that combines a state hook with an effect hook
+const useSemiPersistentState = (key, initialState) => {
+  const [value, setValue] = React.useState(
+    localStorage.getItem(key) || initialState
+  );
+
+  React.useEffect(() => {
+    localStorage.setItem(key, value);
+  }, [value, key]);
+
+  return [value, setValue];
+}
+
+
 
 //This is the app, it is similar to a "main" function but returns an html element which contains the 
 // webpage. 
@@ -29,9 +43,8 @@ const App = () => {
   ];
 
 
-
-  const [searchTerm, setSearchTerm] = React.useState('React');
-
+  //Assign custom hooks just like built-in hooks
+  const [searchTerm, setSearchTerm] = useSemiPersistentState("search", "React");
 
   //Search Callback function
   const handleSearch = event => {
@@ -51,7 +64,16 @@ const App = () => {
     <div className="App">
       <h1>My Hacker Stories</h1>
 
-      <Search search={searchTerm} onSearch={handleSearch} />
+      <InputWithLabel
+        id="search"
+        value={searchTerm}
+        isFocused
+        onInputChange={handleSearch}
+      >
+        <strong>Search:</strong>
+      </InputWithLabel>
+
+      
 
       <hr />
       
@@ -64,23 +86,36 @@ const App = () => {
 
 
 //Search React element definition
-const Search = ({search, onSearch}) => (
-  <div>
-    <label htmlFor="search">Search: </label>
-    <input 
-      id="search" 
-      type="text"
-      value={search} 
-      onChange={onSearch} />
-  </div>
-);
+const InputWithLabel = ({id, value, type = 'text', onInputChange, isFocused, children}) => {
+
+  const inputRef = React.useRef();
+
+  React.useEffect(() => {
+    if (isFocused && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isFocused]);
+
+  return (
+  <>
+    <label htmlFor={id}>{children}</label>
+    &nbsp;
+    
+    <input
+      id={id} 
+      type={type}
+      value={value} 
+      autoFocus={isFocused}
+      onChange={onInputChange} />
+  </>
+  );
+};
 
 
 
 
 //List React element definition
-const List = ({ list }) => 
-  list.map(item => <Item key={item.objectID} item={item} />);
+const List = ({ list }) => list.map(item => <Item key={item.objectID} item={item} />);
   
 
 const Item = ({ item }) => (
