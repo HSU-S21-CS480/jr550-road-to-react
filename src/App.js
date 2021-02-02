@@ -75,11 +75,13 @@ const App = () => {
   );
   
 
-  //Use Effect Hook to set up initial stories, will only trigger once due to empty dependents
-  React.useEffect(() => {
+  //Use Effect Hook to set up initial stories, will trigger when searchTerm is changed.
+  const handleFetchStories = React.useCallback(() => {
+    if (!searchTerm) return;
+
     dispatchStories({type: 'STORIES_FETCH_INIT'})  
 
-    fetch(`${API_ENDPOINT}react`)
+    fetch(`${API_ENDPOINT}${searchTerm}`)
       .then(response => response.json())
       .then(result => {
         dispatchStories({
@@ -89,7 +91,12 @@ const App = () => {
       })
       .catch(() => dispatchStories({ type: 'STORIES_FETCH_FAILURE' }));
 
-  }, []);
+  }, [searchTerm]);
+
+
+  React.useEffect(() => {
+    handleFetchStories();
+  }, [handleFetchStories]);
 
 
   //Remove story callback function
@@ -108,11 +115,7 @@ const App = () => {
   }
 
   
-  //Filter used for searching
-  const searchedStories = stories.data.filter(story => 
-    story.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
+  
 
 
   //Return the HTML element which contains our webpage
@@ -139,7 +142,7 @@ const App = () => {
       {stories.isLoading ? (
         <p>Loading...</p>
       ) : (
-        <List list={searchedStories} onRemoveItem={handleRemoveStory} />
+        <List list={stories.data} onRemoveItem={handleRemoveStory} />
       )}
 
     </div>
