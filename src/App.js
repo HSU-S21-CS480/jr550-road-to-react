@@ -1,5 +1,5 @@
 
-import styles from './App.css';
+
 import React from 'react';
 import axios from 'axios';
 import styled from 'styled-components';
@@ -12,6 +12,8 @@ const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query=';
 
 //Custom React Hook that combines a state hook with an effect hook
 const useSemiPersistentState = (key, initialState) => {
+  const isMounted = React.useRef(false);
+
   const [value, setValue] = React.useState(
     localStorage.getItem(key) || initialState
   );
@@ -19,7 +21,14 @@ const useSemiPersistentState = (key, initialState) => {
 
   //Saves key and value to local storage whenever modified
   React.useEffect(() => {
-    localStorage.setItem(key, value);
+
+    //Run only on re-render
+    if (!isMounted.current) {
+      isMounted.current = true;
+    } else {
+      console.log('A')
+      localStorage.setItem(key, value);
+    }
   }, [value, key]);
 
   return [value, setValue];
@@ -61,12 +70,24 @@ const storiesReducer = (state, action) => {
 }
 
 
+const getSumComments = stories => {
+  console.log('C');
+
+  return stories.data.reduce(
+    (result, value) => result + value.num_comments,
+  0
+  );
+}
+
+
 
 
 
 //This is the app, it is similar to a "main" function but returns an html element which contains the 
 // webpage. 
 const App = () => {
+
+  console.log('B:App');
 
 
 
@@ -109,12 +130,12 @@ const App = () => {
 
 
   //Remove story callback function
-  const handleRemoveStory = item => {
+  const handleRemoveStory = React.useCallback(item => {
     dispatchStories({
       type: 'REMOVE_STORY',
       payload: item
     });
-  }
+  }, []);
 
 
 
@@ -131,12 +152,16 @@ const App = () => {
 
   
   
+  const sumComments = React.useMemo(() => getSumComments(stories), [
+    stories
+  ]);
+  
 
 
   //Return the HTML element which contains our webpage
   return (
     <StyledContainer>
-      <StyledHeadlinePrimary>My Hacker Stories</StyledHeadlinePrimary>
+      <StyledHeadlinePrimary>My Hacker with {sumComments} Stories</StyledHeadlinePrimary>
 
       
       <SearchForm
@@ -213,14 +238,17 @@ const InputWithLabel = ({id, value, type = 'text', onInputChange, isFocused, chi
 
 
 //List React element definition
-const List = ({ list, onRemoveItem }) => 
-list.map(item => (
-  <Item 
-    key={item.objectID} 
-    item={item} 
-    onRemoveItem={onRemoveItem} 
-  />
-));
+const List = React.memo(
+  ({ list, onRemoveItem }) => 
+  console.log('B:List') ||
+    list.map(item => (
+    <Item 
+      key={item.objectID} 
+      item={item} 
+      onRemoveItem={onRemoveItem} 
+    />
+  ))
+);
   
 
 const Item = ({ item, onRemoveItem }) => (
@@ -238,7 +266,7 @@ const Item = ({ item, onRemoveItem }) => (
           onClick={() => 
           onRemoveItem(item)} 
           >
-            <Check height="18px" width="18px" />
+            Dismiss
         </StyledButtonSmall>
       </StyledColumn>
     </StyledItem>
@@ -338,3 +366,5 @@ const Item = ({ item, onRemoveItem }) => (
 
 
 export default App;
+
+export { storiesReducer, SearchForm, InputWithLabel, List, Item }
