@@ -71,11 +71,14 @@ const storiesReducer = (state, action) => {
   }
 };
 
+
+//Returns the searchTerm from the url
 const extractSearchTerm = url => 
   url.substring(url.lastIndexOf('?') + 1, url.lastIndexOf('&'))
   .replace(PARAM_SEARCH, '');
 
 
+//returns a list of the last 5 searches not including current search
 const getLastSearches = urls =>
   urls
     .reduce((result, url, index) => {
@@ -140,6 +143,8 @@ const App = () => {
     }
   }, [urls]);
 
+
+
   // Effect Hook used to call srories handler whenever urls is changed, which
   // in turn causes the function signature of handleFetchStories to be updated,
   // which then triggers the effect.
@@ -168,16 +173,20 @@ const App = () => {
     event.preventDefault();
   };
 
+  // Handler for when a last search is selected to be searched again
   const handleLastSearch = searchTerm => {
     setSearchTerm(searchTerm);
     handleSearch(searchTerm, 0);
   };
 
+  // Handler for returning url with searchTerm and page number
   const handleSearch = (searchTerm, page) => {
     const url = getUrl(searchTerm, page);
     seturls(urls.concat(url));
   };
 
+
+  // Handler for "more" button to fetch next page
   const handleMore = () => {
     const lastUrl = urls[urls.length - 1];
     const searchTerm = extractSearchTerm(lastUrl);
@@ -220,6 +229,16 @@ const App = () => {
       )}
 
       
+
+      
+      <script src="/__/firebase/8.2.7/firebase-app.js"></script>
+
+       
+      <script src="/__/firebase/8.2.7/firebase-analytics.js"></script>
+
+      
+      <script src="/__/firebase/init.js"></script>
+
     </div>
   );
 };
